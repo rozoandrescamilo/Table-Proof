@@ -56,10 +56,22 @@ contract StatusValidator {
         POvalidator[POID].push(Step(Status.TO_BE_CONFIRMED, ""));        
         return success;
     }
+
     
+
     function registerStep(uint256 POID, string calldata metadata) public returns (bool success){
         // Comprueba que la PO haya sido registrado previamente.
         require(POvalidator[POID].length > 0, "This Purchase Order doesn't exist");
+        if(poType == 1){
+            //Usar el enum PurchaseOrderTypeA
+            Status == PurchaseOrderTypeA;
+        } else if (poType == 2) {
+            //Usar el enum PurchaseOrderTypeB
+            Status == PurchaseOrderTypeB;
+        } else if (poType == 3) {
+            //Usar el enum PurchaseOrderTypeC
+            Status == PurchaseOrderTypeC;
+        }
         // Obtiene la matriz de pasos actual para el producto.
         Step[] memory stepsArray = POvalidator[POID];
         // Calcula el estado siguiente para el paso actual.
@@ -76,6 +88,3 @@ contract StatusValidator {
         success = true;
     }
 }
-
-
-
