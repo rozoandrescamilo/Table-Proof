@@ -2,6 +2,7 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 contract StatusValidator {
+
     // Define una estructura de datos llamada Step para almacenar información sobre un paso en el flujo de proceso
     struct Step {
         Status status; // El estado actual del paso
@@ -9,7 +10,7 @@ contract StatusValidator {
     }
 
     // Un enumerable llamado Status que define los diferentes estados posibles de un paso en el flujo de proceso
-    enum PurchaseOrderTypeA {
+    enum Status {
         TO_BE_CONFIRMED, 
         APPROVED, 
         BOOKING_REQUEST 
@@ -57,34 +58,24 @@ contract StatusValidator {
         return success;
     }
 
-    
-
-    function registerStep(uint256 POID, string calldata metadata) public returns (bool success){
+    // Una función para registrar un nuevo paso en el flujodel proceso.
+    function registerStep(uint256 POID, string calldata metadata, uint256 poType) public returns (bool success){
         // Comprueba que la PO haya sido registrado previamente.
         require(POvalidator[POID].length > 0, "This Purchase Order doesn't exist");
-        if(poType == 1){
-            //Usar el enum PurchaseOrderTypeA
-            Status == PurchaseOrderTypeA;
-        } else if (poType == 2) {
-            //Usar el enum PurchaseOrderTypeB
-            Status == PurchaseOrderTypeB;
-        } else if (poType == 3) {
-            //Usar el enum PurchaseOrderTypeC
-            Status == PurchaseOrderTypeC;
-        }
         // Obtiene la matriz de pasos actual para el producto.
         Step[] memory stepsArray = POvalidator[POID];
         // Calcula el estado siguiente para el paso actual.
         uint256 currentStatus = uint256(stepsArray[stepsArray.length - 1].status) + 1;
         // Dado el caso de que el status sea mayor a COMPLETED envía error
-        if (currentStatus > uint256(Status.COMPLETED)) {
+        if (currentStatus > uint256(Status.BOOKING_REQUEST)) {
             revert("The Purchase Order has no more steps");
         }
         // Se asigna el estado actual + 1 y se añade al mapping de PO
         Step memory step = Step(Status(currentStatus), metadata);
         POvalidator[POID].push(step);
         // Se lanza evento donde se registra nuevo step a unu PO
-        emit RegisteredStep(POID, Status(currentStatus), metadata, msg.sender);
+        emit RegisteredStep(POID, poType, Status(currentStatus), metadata, msg.sender);
         success = true;
     }
+
 }
